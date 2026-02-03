@@ -115,3 +115,24 @@
     display: flex;
     flex-direction: column;
 }
+
+/* Override for custom themes (like ElegantFin) that hide cardOverlayButton-br */
+/* Ensure discover request button remains visible */
+.discover-card .cardOverlayButton-br,
+.layout-desktop .discover-card .cardOverlayButton-br,
+[dir="ltr"].layout-desktop .discover-card .cardOverlayButton-br {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.discover-card .discover-requestbutton {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ensure button is properly styled and clickable */
+.discover-card .cardOverlayButton-br .cardOverlayButton-hover {
+    display: inline-flex !important;
+}
