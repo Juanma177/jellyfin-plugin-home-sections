@@ -9,11 +9,11 @@
     "imageUrl": "https://raw.githubusercontent.com/IAmParadox27/jellyfin-plugin-home-sections/main/src/logo.png",
     "versions": [
       {
-        "version": "2.5.6.0",
+        "version": "2.5.7.0",
         "changelog": "Add jellyseerr requests",
         "targetAbi": "10.11.6.0",
-        "sourceUrl": "https://github.com/Juanma177/jellyfin-plugin-home-sections/releases/download/2.5.6.0/Release-10.11.6.zip",
-        "checksum": "5794c847c5093312492d059a3e086214",
+        "sourceUrl": "https://github.com/Juanma177/jellyfin-plugin-home-sections/releases/download/2.5.7.0/Release-10.11.6.zip",
+        "checksum": "a57104a1741b2c16a60a607b80ed3491",
         "timestamp": "2026-01-03T17:20:25Z"
       }
     ]
