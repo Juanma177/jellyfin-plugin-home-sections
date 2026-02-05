@@ -131,9 +131,9 @@
             
             var posterUrl = item.ProviderIds.JellyseerrPoster;
             
-            html += '           <a is="emby-linkbutton" target="_blank" href="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" class="cardImageContainer coveredImage cardContent itemAction lazy blurhashed lazy-image-fadein-fast" aria-label="" style="background-image: url(\'' + posterUrl + '\');color: inherit; text-decoration: none;"></a>';
+            html += '           <div class="cardImageContainer coveredImage cardContent lazy blurhashed lazy-image-fadein-fast discover-card-link" data-tmdb-id="' + item.ProviderIds.Jellyseerr + '" data-media-type="' + item.SourceType + '" data-jellyseerr-url="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" style="background-image: url(\'' + posterUrl + '\'); cursor: pointer;"></div>';
             html += '           <div class="cardOverlayContainer itemAction" data-action="link">';
-            html += '               <a is="emby-linkbutton" target="_blank" href="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" class="cardImageContainer"  style="color: inherit; text-decoration: none;"></a>';
+            html += '               <div class="cardImageContainer discover-card-link" data-tmdb-id="' + item.ProviderIds.Jellyseerr + '" data-media-type="' + item.SourceType + '" data-jellyseerr-url="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" style="cursor: pointer;"></div>';
             html += '               <div class="cardOverlayButton-br flex">';
             html += '                   <button is="discover-requestbutton" type="button" data-action="none" class="discover-requestbutton cardOverlayButton cardOverlayButton-hover itemAction paper-icon-button-light emby-button" data-id="' + item.ProviderIds.Jellyseerr + '" data-media-type="' + item.SourceType + '">';
             html += '                       <span class="material-icons cardOverlayButtonIcon cardOverlayButtonIcon-hover add" aria-hidden="true"></span>';
@@ -143,7 +143,7 @@
             html += '       </div>';
             html += '       <div class="cardText cardTextCentered cardText-first">';
             html += '           <bdi>';
-            html += '               <a is="emby-linkbutton" style="color: inherit; text-decoration: none;" target="_blank" href="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" class="itemAction textActionButton" title="' + item.Name + '" data-action="link">' + item.Name + '</a>';
+            html += '               <span class="textActionButton discover-card-link" title="' + item.Name + '" data-tmdb-id="' + item.ProviderIds.Jellyseerr + '" data-media-type="' + item.SourceType + '" data-jellyseerr-url="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" style="color: inherit; cursor: pointer;">' + item.Name + '</span>';
             html += '           </bdi>';
             html += '       </div>';
             html += '       <div class="cardText cardTextCentered cardText-secondary">';
@@ -151,7 +151,7 @@
 
             var date = new Date(item.PremiereDate);
             
-            html += '               <a is="emby-linkbutton" style="color: inherit; text-decoration: none;" target="_blank" href="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" class="itemAction textActionButton" title="' + date.getFullYear() + '" data-action="link">' + date.getFullYear() + '</a>';
+            html += '               <span class="textActionButton discover-card-link" title="' + date.getFullYear() + '" data-tmdb-id="' + item.ProviderIds.Jellyseerr + '" data-media-type="' + item.SourceType + '" data-jellyseerr-url="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" style="color: inherit; cursor: pointer;">' + date.getFullYear() + '</span>';
             html += '           </bdi>';
             html += '       </div>';
             html += '   </div>';

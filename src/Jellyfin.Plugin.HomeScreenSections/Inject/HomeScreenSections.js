@@ -17,10 +17,37 @@ if (typeof HomeScreenSectionsHandler == 'undefined') {
                     [].some.call(mutation.addedNodes, function (addedNode) {
                         if ($(addedNode).hasClass('discover-card')) {
                             $(addedNode).on('click', '.discover-requestbutton', HomeScreenSectionsHandler.clickHandler);
+                            $(addedNode).on('click', '.discover-card-link', HomeScreenSectionsHandler.cardLinkHandler);
                         }
                     });
                 }
             });
+        },
+        cardLinkHandler: function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var $link = $(this);
+            var tmdbId = parseInt($link.data('tmdb-id'));
+            var mediaType = $link.data('media-type');
+            var jellyseerrUrl = $link.data('jellyseerr-url');
+
+            // Try to open the more-info modal from Jellyfin Enhanced
+            if (window.JellyfinEnhanced &&
+                window.JellyfinEnhanced.jellyseerrMoreInfo &&
+                window.JellyfinEnhanced.pluginConfig &&
+                window.JellyfinEnhanced.pluginConfig.JellyseerrEnabled) {
+
+                if (tmdbId && mediaType) {
+                    window.JellyfinEnhanced.jellyseerrMoreInfo.open(tmdbId, mediaType);
+                    return;
+                }
+            }
+
+            // Fallback: open Jellyseerr URL in a new tab
+            if (jellyseerrUrl) {
+                window.open(jellyseerrUrl, '_blank', 'noopener,noreferrer');
+            }
         },
         clickHandler: function (event) {
             var mediaType = $(this).data('media-type');
