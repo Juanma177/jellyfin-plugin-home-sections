@@ -136,3 +136,30 @@
 .discover-card .cardOverlayButton-br .cardOverlayButton-hover {
     display: inline-flex !important;
 }
+
+/* Prevent multi-select/selection handler on discover cards (Jellyseerr items) */
+/* These items can't be deleted from Jellyfin so the selection handler is useless */
+.discover-card .itemSelectionPanel,
+.discover-card .selectionCommandsPanel {
+    display: none !important;
+}
+
+/* Prevent touch callout and text selection that might trigger selection mode */
+.discover-card {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    touch-action: manipulation;
+}
+
+/* Ensure the card doesn't get the withMultiSelect class styling */
+.discover-card.withMultiSelect {
+    background: transparent !important;
+}
+
+.discover-card.withMultiSelect::before,
+.discover-card.withMultiSelect::after {
+    display: none !important;
+}

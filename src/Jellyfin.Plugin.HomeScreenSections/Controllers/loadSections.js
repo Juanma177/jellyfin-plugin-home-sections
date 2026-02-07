@@ -123,7 +123,7 @@
         
         var index = 0;
         items.forEach(function (item) {
-            html += '<div class="card overflowPortraitCard card-hoverable card-withuserdata discover-card" data-index="' + index + '">';
+            html += '<div class="card overflowPortraitCard card-hoverable card-withuserdata discover-card" data-index="' + index + '" data-tmdb-id="' + item.ProviderIds.Jellyseerr + '" data-media-type="' + item.SourceType + '" data-jellyseerr-url="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '">';
             html += '   <div class="cardBox cardBox-bottompadded">';
             html += '       <div class="cardScalable discoverCard-' + item.SourceType + '">';
             html += '           <div class="cardPadder cardPadder-overflowPortrait lazy-hidden-children"></div>';
@@ -132,7 +132,7 @@
             var posterUrl = item.ProviderIds.JellyseerrPoster;
             
             html += '           <div class="cardImageContainer coveredImage cardContent lazy blurhashed lazy-image-fadein-fast discover-card-link" data-tmdb-id="' + item.ProviderIds.Jellyseerr + '" data-media-type="' + item.SourceType + '" data-jellyseerr-url="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" style="background-image: url(\'' + posterUrl + '\'); cursor: pointer;"></div>';
-            html += '           <div class="cardOverlayContainer itemAction" data-action="link">';
+            html += '           <div class="cardOverlayContainer">';
             html += '               <div class="cardImageContainer discover-card-link" data-tmdb-id="' + item.ProviderIds.Jellyseerr + '" data-media-type="' + item.SourceType + '" data-jellyseerr-url="' + item.ProviderIds.JellyseerrRoot + '/' + item.SourceType + '/' + item.ProviderIds.Jellyseerr + '" style="cursor: pointer;"></div>';
             html += '               <div class="cardOverlayButton-br flex">';
             html += '                   <button is="discover-requestbutton" type="button" data-action="none" class="discover-requestbutton cardOverlayButton cardOverlayButton-hover itemAction paper-icon-button-light emby-button" data-id="' + item.ProviderIds.Jellyseerr + '" data-media-type="' + item.SourceType + '">';

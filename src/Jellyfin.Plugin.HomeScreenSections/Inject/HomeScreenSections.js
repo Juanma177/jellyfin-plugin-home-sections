@@ -2,6 +2,16 @@
 
 if (typeof HomeScreenSectionsHandler == 'undefined') {
     const HomeScreenSectionsHandler = {
+        // Touch state tracking to prevent mobile selection handler
+        touchState: {
+            startTime: 0,
+            startX: 0,
+            startY: 0,
+            moved: false,
+            target: null,
+            longPressThreshold: 300, // ms - taps shorter than this open modal
+            moveThreshold: 10 // px - movement greater than this cancels tap
+        },
         init: function () {
             var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
             var myObserver = new MutationObserver(this.mutationHandler);
@@ -17,21 +27,84 @@ if (typeof HomeScreenSectionsHandler == 'undefined') {
                     [].some.call(mutation.addedNodes, function (addedNode) {
                         if ($(addedNode).hasClass('discover-card')) {
                             $(addedNode).on('click', '.discover-requestbutton', HomeScreenSectionsHandler.clickHandler);
-                            $(addedNode).on('click', '.discover-card-link', HomeScreenSectionsHandler.cardLinkHandler);
+                            $(addedNode).on('click', HomeScreenSectionsHandler.cardLinkHandler);
+
+                            // Add touch event handlers to prevent mobile selection handler
+                            HomeScreenSectionsHandler.attachTouchHandlers(addedNode);
                         }
                     });
                 }
             });
         },
-        cardLinkHandler: function (event) {
-            event.preventDefault();
-            event.stopPropagation();
+        // Attach touch event handlers to prevent Jellyfin's selection handler on mobile
+        attachTouchHandlers: function (card) {
+            var self = this;
+            var el = card;
 
-            var $link = $(this);
-            var tmdbId = parseInt($link.data('tmdb-id'));
-            var mediaType = $link.data('media-type');
-            var jellyseerrUrl = $link.data('jellyseerr-url');
+            // Prevent the default touch behavior that triggers selection
+            el.addEventListener('touchstart', function (e) {
+                // Don't interfere with request button
+                if (e.target.closest('.discover-requestbutton')) {
+                    return;
+                }
 
+                self.touchState.startTime = Date.now();
+                self.touchState.startX = e.touches[0].clientX;
+                self.touchState.startY = e.touches[0].clientY;
+                self.touchState.moved = false;
+                self.touchState.target = e.currentTarget;
+
+                // Stop event from reaching Jellyfin's selection handler
+                e.stopPropagation();
+            }, { passive: true, capture: true });
+
+            el.addEventListener('touchmove', function (e) {
+                if (!self.touchState.target) return;
+
+                var dx = Math.abs(e.touches[0].clientX - self.touchState.startX);
+                var dy = Math.abs(e.touches[0].clientY - self.touchState.startY);
+
+                if (dx > self.touchState.moveThreshold || dy > self.touchState.moveThreshold) {
+                    self.touchState.moved = true;
+                }
+            }, { passive: true });
+
+            el.addEventListener('touchend', function (e) {
+                // Don't interfere with request button
+                if (e.target.closest('.discover-requestbutton')) {
+                    return;
+                }
+
+                var duration = Date.now() - self.touchState.startTime;
+                var wasQuickTap = duration < self.touchState.longPressThreshold && !self.touchState.moved;
+
+                // Stop propagation to prevent selection handler
+                e.stopPropagation();
+                e.preventDefault();
+
+                // Only trigger modal on quick taps, not long presses
+                if (wasQuickTap && self.touchState.target) {
+                    var $card = $(self.touchState.target);
+                    var tmdbId = parseInt($card.data('tmdb-id'));
+                    var mediaType = $card.data('media-type');
+                    var jellyseerrUrl = $card.data('jellyseerr-url');
+
+                    self.openModal(tmdbId, mediaType, jellyseerrUrl);
+                }
+
+                // Reset touch state
+                self.touchState.target = null;
+                self.touchState.moved = false;
+            }, { capture: true });
+
+            // Also handle touchcancel
+            el.addEventListener('touchcancel', function (e) {
+                self.touchState.target = null;
+                self.touchState.moved = false;
+            }, { passive: true });
+        },
+        // Helper to open the modal (shared between touch and click handlers)
+        openModal: function (tmdbId, mediaType, jellyseerrUrl) {
             // Try to open the more-info modal from Jellyfin Enhanced
             if (window.JellyfinEnhanced &&
                 window.JellyfinEnhanced.jellyseerrMoreInfo &&
@@ -48,6 +121,33 @@ if (typeof HomeScreenSectionsHandler == 'undefined') {
             if (jellyseerrUrl) {
                 window.open(jellyseerrUrl, '_blank', 'noopener,noreferrer');
             }
+        },
+        cardLinkHandler: function (event) {
+            // Ignore clicks on the request button — those are handled by clickHandler
+            if ($(event.target).closest('.discover-requestbutton').length > 0) {
+                return;
+            }
+
+            // On touch devices, the touchend handler already handled this
+            if ('ontouchstart' in window && event.type === 'click') {
+                // Check if this looks like it came from a touch (no mouse movement)
+                // We still want mouse clicks on desktop to work
+                if (event.sourceCapabilities && event.sourceCapabilities.firesTouchEvents) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return; // Touch handler already dealt with this
+                }
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            var $card = $(this);
+            var tmdbId = parseInt($card.data('tmdb-id'));
+            var mediaType = $card.data('media-type');
+            var jellyseerrUrl = $card.data('jellyseerr-url');
+
+            HomeScreenSectionsHandler.openModal(tmdbId, mediaType, jellyseerrUrl);
         },
         clickHandler: function (event) {
             var mediaType = $(this).data('media-type');
