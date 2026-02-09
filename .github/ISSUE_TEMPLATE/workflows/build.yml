@@ -1,0 +1,62 @@
+name: Build Jellyfin Plugin
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for Jellyfin ${{ matrix.jellyfin_version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          # Target specific versions defined in your csproj conditions
+          - jellyfin_version: "10.10.7"
+            dotnet_version: "8.0.x"
+            framework: "net8.0"
+          - jellyfin_version: "10.11.5"
+            dotnet_version: "9.0.x"
+            framework: "net9.0"
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Required for the GitBranch logic in your csproj
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ matrix.dotnet_version }}
+
+    - name: Restore Dependencies
+      run: dotnet restore src/Jellyfin.Plugin.HomeScreenSections/Jellyfin.Plugin.HomeScreenSections.csproj
+
+    - name: Build Plugin
+      run: |
+        dotnet build src/Jellyfin.Plugin.HomeScreenSections/Jellyfin.Plugin.HomeScreenSections.csproj \
+          --configuration Release \
+          --no-restore \
+          /p:JellyfinVersion=${{ matrix.jellyfin_version }} \
+          --output bin/Release/${{ matrix.jellyfin_version }}
+
+    # Optional: Clean up output (remove Jellyfin system DLLs usually provided by the server)
+    - name: Clean Output
+      run: |
+        cd bin/Release/${{ matrix.jellyfin_version }}
+        rm -f Jellyfin.Controller.dll Jellyfin.Model.dll Jellyfin.Extensions.dll
+
+    - name: Zip Artifact
+      run: |
+        cd bin/Release/${{ matrix.jellyfin_version }}
+        zip -r ../../../HomeScreenSections-${{ matrix.jellyfin_version }}.zip *
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: HomeScreenSections-${{ matrix.jellyfin_version }}
+        path: HomeScreenSections-${{ matrix.jellyfin_version }}.zip
