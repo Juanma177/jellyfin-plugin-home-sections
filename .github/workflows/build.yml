@@ -14,11 +14,10 @@ jobs:
     strategy:
       matrix:
         include:
-          # Target specific versions defined in your csproj conditions
           - jellyfin_version: "10.10.7"
             dotnet_version: "8.0.x"
             framework: "net8.0"
-          - jellyfin_version: "10.11.5"
+          - jellyfin_version: "10.11.6"
             dotnet_version: "9.0.x"
             framework: "net9.0"
 
@@ -26,15 +25,18 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0 # Required for the GitBranch logic in your csproj
+        fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ matrix.dotnet_version }}
 
+    # FIXED: Added /p:JellyfinVersion to ensure the correct TargetFramework is restored
     - name: Restore Dependencies
-      run: dotnet restore src/Jellyfin.Plugin.HomeScreenSections/Jellyfin.Plugin.HomeScreenSections.csproj
+      run: |
+        dotnet restore src/Jellyfin.Plugin.HomeScreenSections/Jellyfin.Plugin.HomeScreenSections.csproj \
+        /p:JellyfinVersion=${{ matrix.jellyfin_version }}
 
     - name: Build Plugin
       run: |
@@ -44,7 +46,6 @@ jobs:
           /p:JellyfinVersion=${{ matrix.jellyfin_version }} \
           --output bin/Release/${{ matrix.jellyfin_version }}
 
-    # Optional: Clean up output (remove Jellyfin system DLLs usually provided by the server)
     - name: Clean Output
       run: |
         cd bin/Release/${{ matrix.jellyfin_version }}
